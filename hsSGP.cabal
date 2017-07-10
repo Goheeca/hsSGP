@@ -1,0 +1,26 @@
+name:                hsSGP
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/goheeca/hsSGP#readme
+license:             BSD3
+--license-file:        LICENSE
+author:              Goheeca
+maintainer:          goheeca@gmail.com
+copyright:           2017 Goheeca
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+
+executable hsSGP
+  hs-source-dirs:      src
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5,
+                       cryptohash,
+                       bytestring,
+                       byteable,
+                       regex-compat,
+                       base64-bytestring,
+                       text
