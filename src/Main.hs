@@ -94,25 +94,23 @@ sgpOpts argv =
 main :: IO ()
 main = do
   args <- getArgs
-  if length args == 0
+  if null args
     then putStrLn $ usageInfo header options
     else do
       optsArgs <- sgpOpts args
       opts <- return . fst $ optsArgs
-      hostName <-
-        return $ getHostname (optRemovingSubdomains opts) (optUrl opts)
+      let hostName = getHostname (optRemovingSubdomains opts) (optUrl opts)
       combination <-
-        if hostName == Nothing
+        if isNothing hostName
           then putStrLn (usageInfo header options) >> fail "Bad URL"
           else return $
                combineParts
                  (optMainPassword opts)
                  (optSecretPassword opts)
                  (fromJust hostName)
-      genPassWithHash <-
-        return $
-        case (optHashFn opts) of
-          MD5    -> generatePassword md5
-          SHA512 -> generatePassword sha512
+      let genPassWithHash =
+            case optHashFn opts of
+              MD5    -> generatePassword md5
+              SHA512 -> generatePassword sha512
       putStrLn $
         genPassWithHash (optMinRounds opts) (optPasswordLen opts) combination

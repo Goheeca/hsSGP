@@ -6,6 +6,7 @@ module Crypto.SGP
   , sha512
   ) where
 
+import           Control.Applicative    ((<$>))
 import           Crypto.Hash            (Digest, hash)
 import qualified Crypto.Hash            as CH
 import           Crypto.SGP.TLD
@@ -59,12 +60,11 @@ removeSubdomains domain
     subdomainDelimiter = mkRegex "\\."
     domainParts = splitRegex subdomainDelimiter domain
     ccTldList' = map ('.' :) ccTldList
-    ccSuffix = find (flip endsWith domain) ccTldList'
+    ccSuffix = find (`endsWith` domain) ccTldList'
     subdomainLen = length . splitRegex subdomainDelimiter $ fromJust ccSuffix
 
 getHostname :: Bool -> String -> Maybe String
-getHostname rmSubs url =
-  fmap (subsRemoving . (!! 2)) $ matchRegex domainRegex url
+getHostname rmSubs url = (subsRemoving . (!! 2)) <$> matchRegex domainRegex url
   where
     ipUrl dom = isJust $ matchRegex ipRegex dom
     subsRemoving dom
@@ -89,7 +89,8 @@ containsNumeral = mkRegex "[0-9]"
 
 validatePassword :: String -> Int -> Bool
 validatePassword password len =
-  and . fmap (isJust . flip matchRegex (take len password)) $
+  and $
+  isJust . flip matchRegex (take len password) <$>
   [startsWithLowercaseLetter, containsUppercaseLetter, containsNumeral]
 
 combineParts :: String -> String -> String -> String
